@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="MCMC in C++" />
+        <meta name="author" content="Mariano Chaves" />
+        <title>MCMC | C++</title>
+        <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+        <!--Code on page-->
+        <link href="css/prism.css" rel="stylesheet"/>
+        <script src="js/prism.js"></script>
+        <!--Max Jax-->
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger" href="#page-top">
+                <span class="d-block d-lg-none">Mariano Chaves</span>
+                <span class="d-none d-lg-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="assets/img/profile.jpg" alt="" /></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="index.html">Home</a></li>
+                    <hr>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#basic">Basics</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#sampling">Sampling</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#convergence">Convergence</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#save-state">Save and Load states</a></li>
+                </ul>
+            </div>
+        </nav>
+        <!-- Page Content-->
+        <div class="container-fluid p-0">
+            <!-- About-->
+            <section class="resume-section" id="about">
+                <div class="resume-section-content">
+                    <h1 class="mb-0">
+                        MCMC
+                        <span class="text-primary">C++</span>
+                    </h1>
+                    <div class="subheading mb-5">
+                        Affine Invariant Markov chain Monte Carlo (MCMC) Ensemble sampler
+                        <a href="mailto:mchaves@ifi.unicamp.br">mchaves@ifi.unicamp.br</a>
+                    </div>
+                    <p class="lead mb-5">On this page, I exemplify the use of the MCMC using the <a href=https://github.com/MarianoChaves/MCMC>package</a> I create using C++. I will try to do that by explaining the method and the package togheter. This package is based on the <a href=https://emcee.readthedocs.io/en/stable/ >emcee</a>, written in python.</p>
+                    <div class="social-icons">
+                        <a class="social-icon" href="https://github.com/MarianoChaves/MCMC"><i class="fab fa-github"></i></a>
+                        <a class="social-icon" href="https://msp.org/camcos/2010/5-1/p04.xhtml"><i class="fas fa-scroll"></i></a>
+                        <!-- <a class="social-icon" href="#"><i class="fab fa-facebook-f"></i></a>-->
+                    </div>
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Experience-->
+            <section class="resume-section" id="basic">
+                <div class="resume-section-content">
+                    <h2 class="mb-5">Basics</h2>
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0">Compiling and usage</h3>
+                            <p>In order to use the MCMC, you should compile the program using the <b>make</b> command in the gnu terminal. 
+                                Once you have compiled the program, you are able to use it in any program. </p>
+                            <p>To user the MCMC sampling in another program you should use the flag <b>-lnu</b>. Inside the program you should refer to the location of the file using <i>#include "<b>(the path goes here)</b>/nu.h"</i>. </p>
+                            <h3 class="mb-0">Understanding the MCMC</h3>
+                            <p>The MCMC sampling is an algorithm that has as goal sampling some probability distribution \(p(\vec{x})\), where \(\vec{x}\) is an N-dimensional vector. The advantage of using affine invariant MCMC is that you don't need to have a prior acknowledgement of the distribution for all the variables. 
+                                There are three main rules when running MCMC:
+                                <ul>
+                                    <li>Choose your initial guess;</li>
+                                    <li>Ensure convergence;</li>
+                                    <li>Get as many samples as you need;</li>
+                                </ul>
+                            </p>
+                            <p>In the algorithm, we consider two elements: walkers and ensembles of walkers. A walker is a vector in the N-dimensional space that stores one sampling story. An ensemble is a set of walkers.
+                                In the beginning, you choose an ensemble of walkers with randomly organized initial positions.</p>
+                            <p>Let's use as example, the function </p>
+                            <p style="text-align: center;">\(-\frac{1}{2}\log \left[p(\vec{x})\right]=\sum_i \frac{(x_i-c_i)^2}{\sigma^2_i}-\frac{(x_0-c_0)(x_1-c_1)}{\sigma_0\sigma_1}-\frac{(x_2-c_2)(x_1-c_1)}{\sigma_2\sigma_1},\)</p>
+                            <p>where \(c_0=50\), \(c_0=1\), \(c_0=20\), \(\sigma_0=1\), \(\sigma_1=1\) and \(\sigma_2=20\).</p>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+            <hr class="m-0" />
+            <!-- Education-->
+            <section class="resume-section" id="sampling">
+                <div class="resume-section-content">
+                    <h2 class="mb-5">Sampling</h2>
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0">The initial guess</h3>
+                            <p>The following code can be used to generate the initial guess in the file <b>guess.csv</b>.</p>
+                            <div class="subheading mb-3">The code</div>
+                            The C++ code:
+                            <pre>
+                                <code class="language-c++">
+/*INITIAL GUESS*/
+std::vector&#60; std::vector&#60;double&#62; &#62; init_pos;
+for(int k = 0; k &#60; nwalkers; k++){ 
+    double p1 = double(rand()% 200+500)/10; 
+    double p2 = double(rand()% 100+1)/10; 
+    double p3 = double(rand()% 200+1)/10; 
+    std::vector&#60;double&#62; pos{p1,p2,p3}; 
+    init_pos.push_back(pos); 
+} 
+...
+nu::Mcmc my_sample(nwalkers, ndim, init_pos); /*CREACTE THE ENSEMBLE*/
+my_sample.save_state(file_name); /*SAVE THE PRESENT STATE OF THE ENSEMBLE*/ 
+...
+                                </code>
+                            </pre>
+                            For the last code, if we assume \(250\) walkers we the results that are scattered on Fig. 1, and has can you see the points are scatterd uniformly around the chosen region.
+                            <figure style="text-align: center;">
+                                <img src="assets/img/example_0.png" alt="Trulli" style="width:50%">
+                                <figcaption>Fig.1 - Scattered initial guess.</figcaption>
+                              </figure>
+                                    <h3 class="mb-0">Running</h3>
+                                    In order to get more points, we need to use the <i>run</i> method using more steps, for the fig. 2 we use 50 steps. We also emphasise that the function that should be passed to the method <i>run</i>, is \(-\frac{1}{2}\log(p) \). 
+                                    <pre>
+                                        <code class="language-c++">
+...
+my_sample.run(loglike, nsteps); 
+char header[256] = "x,y,z,walker\n"; 
+my_sample.save_chain_walker(file_sample_name,header);
+...                                        
+                                        </code>
+                                    </pre>
+                                    The save_chain_walker method saves the history of the walkers as a csv file whih the last column is the walker identifier given by an integer going from 1 to the number of walkers. In fig 2. we show the result of the output.
+                                    <figure style="text-align: center;">
+                                        <img src="assets/img/example_1.png" alt="Trulli" style="width:50%">
+                                        <figcaption>Fig.2 - Scattered history of the walkers.</figcaption>
+                                      </figure>
+                            <p>In figure 2 you can see that we still have the history of the walkers in the path from our initial guess to the exact distribution. To solve that we need to insure convergence, this is the next topic.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Skills-->
+            <section class="resume-section" id="convergence">
+                <div class="resume-section-content">
+                    <h2 class="mb-5">Convergence</h2>
+                    <div class="subheading mb-3">The code</div>
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Interests-->
+            <section class="resume-section" id="save-state">
+                <div class="resume-section-content">
+                    <h2 class="mb-5">Save and Load states</h2>
+                    <p>Under construction</p>
+                    <p class="mb-0">...</p>
+                </div>
+            </section>
+            <hr class="m-0" />
+        </div>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Third party plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
