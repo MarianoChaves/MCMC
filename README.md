@@ -5,6 +5,6 @@ The MCMC algorithm using C++: based on <a href=https://emcee.readthedocs.io/en/s
 
 <img src="https://img.shields.io/static/v1?label=version&message=v0.1&color=blue&style=for-the-badge&logo=c++"/> <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=blue&style=for-the-badge&logo=none"/>
 
-You can find a Quick Start on <a href=https://marianochaves.github.io/mcmc.html>nuMCMC</a>.
+Here you can find a <a href=https://marianochaves.github.io/mcmc.html>Quick Start</a> on the nuMCMC.
 
 For further information contact mchaves@ifi.unicamp.br
