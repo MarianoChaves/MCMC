@@ -175,9 +175,14 @@ namespace nu{
     
 
     int Mcmc::run(double (*func)(std::vector<double>),int steps){
+
+
         for(int i = 1; i <= steps; i++){
             //1:
             for(int k = 1; k<=nwalkers; k++){
+                
+
+                //0.0001 s
                 Walker walker, walker_aux;
                 double logPY, logPX, q, z, r;
                 std::vector<double>  Y;
@@ -206,7 +211,7 @@ namespace nu{
                     //5:
                     logPY = func(Y);
                 }while(logPY==-std::numeric_limits<double>::infinity());
-
+                
                 logPX = func(Xk);
                 q = pow(z, ndim-1)*exp(logPY-logPX);
                 //6:
@@ -224,6 +229,140 @@ namespace nu{
                 sample.includeWalker(walker);
             };
         };
+
+        return 0;
+    }
+
+    int Mcmc::run_parallel(double (*func)(std::vector<double>),int steps, int threads){
+        std::vector<Ensemble> samples;
+        samples = sample.divideEnsemble();
+
+
+        for(int i = 1; i <= steps; i++){
+            #pragma omp parallel 
+            {
+            #pragma omp for            
+            for(int ip = 0; ip<=1; ip++)
+            {
+                //1:
+                #pragma omp parallel for num_threads(threads)
+                for(int k = 1; k<=nwalkers/2; k++){                                    
+                    Walker walker, walker_aux;
+                    double logPY, logPX, q, z, r;
+                    std::vector<double>  Y;
+                    std::vector<double> Xj;
+                    std::vector<double> Xk;
+
+                    int ic = (ip-1)*(-1);
+
+                    walker = samples[ip].getWalker(1);
+                    
+                    //2:
+                    //The loop constraint some region
+                    do
+                    {
+                        Xj.clear();
+                        Xk.clear();
+                        Y.clear();
+                        walker_aux = samples[ic].getRandomWalkerCopy();                
+                        //3:
+                        double uniform_rand = double((rand() % 5001))/5001.;
+                        z = F(uniform_rand);
+                        
+                        //4:
+                        for(int l = 0; l<this->ndim; l++){
+                            Xj.push_back(walker_aux.getPos()[l]);
+                            Xk.push_back(walker.getPos()[l]);
+                            Y.push_back(Xj[l]+z*(Xk[l]-Xj[l]));
+                        };
+                        //5:
+                        logPY = func(Y);
+                    }while(logPY==-std::numeric_limits<double>::infinity());
+
+                    logPX = func(Xk);
+                    q = pow(z, ndim-1)*exp(logPY-logPX);
+                    //6:
+                    r = double((rand() % 5001))/5001.;
+                    //7:"
+                    if(r<=q)
+                    {//8:
+                        walker.setPos(Y);
+                    }//9:
+                    else
+                    {
+                        //10:
+                        walker.setPos(Xk);
+                    }
+                    samples[ip].includeWalker(walker);
+                };
+            };
+            }
+        };
+        
+        std::vector<Walker> aux_walkers1, aux_walkers2;
+        aux_walkers1 = samples[0].getWalkers();
+        aux_walkers2 = samples[1].getWalkers();
+        aux_walkers1.insert( aux_walkers1.end(), aux_walkers2.begin(), aux_walkers2.end() );
+        this->sample.setWalkers(aux_walkers1);
+        return 0;
+    }
+
+    int Mcmc::run_notlog(double (*func)(std::vector<double>),int steps){
+
+
+        for(int i = 1; i <= steps; i++){
+            //1:
+            for(int k = 1; k<=nwalkers; k++){
+                
+
+                //0.0001 s
+                Walker walker, walker_aux;
+                double logPY, logPX, q, z, r;
+                std::vector<double>  Y;
+                std::vector<double> Xj;
+                std::vector<double> Xk;
+
+
+                walker = sample.getWalker(1);
+                //2:
+                //The loop constraint some region
+                do
+                {
+                    Xj.clear();
+                    Xk.clear();
+                    Y.clear();
+                    walker_aux = sample.getRandomWalkerCopy();                
+                    //3:
+                    double uniform_rand = double((rand() % 5001))/5001.;
+                    z = F(uniform_rand);
+                    //4:
+                    for(int l = 0; l<this->ndim; l++){
+                        Xj.push_back(walker_aux.getPos()[l]);
+                        Xk.push_back(walker.getPos()[l]);
+                        Y.push_back(Xj[l]+z*(Xk[l]-Xj[l]));
+                    };
+                    //5:
+                    logPY = func(Y);
+                }while(logPY==-std::numeric_limits<double>::infinity());
+                
+                logPX = func(Xk);
+                q = pow(z, ndim-1)*logPY/logPX;
+                //6:
+                r = double((rand() % 5001))/5001.;
+                //7:"
+                if(r<=q)
+                {//8:
+                    walker.setPos(Y);
+                }//9:
+                else
+                {
+                    //10:
+                    walker.setPos(Xk);
+                }
+                sample.includeWalker(walker);
+            };
+        };
+
         return 0;
     }
 

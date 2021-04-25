@@ -6,8 +6,9 @@
 #include<iostream>
 #include<fstream>
 #include<string>
-#include <sstream>
+#include<sstream>
 #include<limits>
+#include<time.h>
 #include "walker.h"
 #include "ensemble.h"
 
@@ -24,11 +25,14 @@ namespace nu
             double F(double z){
                 return 0.5*(z*z+2*z+1);
             };
+            bool constrained = true;
 
             std::vector< std::vector<double> > load_state(char *file_name);
 
         public:
             int run(double (*func)(std::vector<double>), int steps);
+            int run_parallel(double (*func)(std::vector<double>), int steps, int threads);
+            int run_notlog(double (*func)(std::vector<double>), int steps);
             int reset();
             int save_state(char *file_name);
             

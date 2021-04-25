@@ -27,10 +27,13 @@ namespace nu{
             Walker getRandomWalkerCopy();
             Walker getWalker(int k);
             Walker getWalkerCopy(int k);
+            std::vector<Walker> getWalkers();
+            void setWalkers(std::vector<Walker> walkers){this->walkers = walkers;};
 
             int includeWalker(Walker walker);
             int substituteWalker(int k, Walker walker);
             int cleanEnsembleHistory();
+            std::vector<Ensemble> divideEnsemble();
 
             Ensemble(int K, int N, std::vector< Walker > intial_walkers);
             Ensemble(){};

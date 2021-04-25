@@ -49,4 +49,24 @@ namespace nu{
             };
             return 1;
         };
+
+        std::vector<Ensemble> Ensemble::divideEnsemble(){
+
+            std::size_t const half_size = this->walkers.size() / 2;
+            std::vector<Walker> split_lo(this->walkers.begin(), this->walkers.begin() + half_size);
+            std::vector<Walker> split_hi(this->walkers.begin() + half_size, this->walkers.end());
+
+            Ensemble sample1((int)this->walkers.size() / 2,ndim,split_lo);
+            Ensemble sample2((int)this->walkers.size() / 2,ndim,split_hi);
+
+            std::vector<Ensemble> samples;
+            samples.push_back(sample1);
+            samples.push_back(sample2);
+
+            return samples;
+        }
+
+        std::vector<Walker> Ensemble::getWalkers(){
+            return this->walkers;
+        }
 }
