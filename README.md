@@ -7,4 +7,12 @@ The MCMC algorithm using C++: based on <a href=https://emcee.readthedocs.io/en/s
 
 Here you can find a <a href=https://marianochaves.github.io/mcmc.html>Quick Start</a> on the nuMCMC.
 
+##v. 0.2
+* Inclusion of the working parallelized version of the code: "run_parallel()";
+
+##v. 0.1
+* Working code;
+* Save and load states;
+* Save history functions;
+
 For further information contact mchaves@ifi.unicamp.br
