@@ -4,7 +4,7 @@
 #include<fstream>
 #include <time.h> 
 
-#include "../../nu.h"
+#include "../../src/nu.h"
 
 double loglike(std::vector<double> params){
     double logL = 0;
