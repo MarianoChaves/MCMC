@@ -7,6 +7,9 @@ The MCMC algorithm using C++: based on <a href=https://emcee.readthedocs.io/en/s
 
 Here you can find a <a href=https://marianochaves.github.io/mcmc.html>Quick Start</a> on the nuMCMC.
 
+### Cite as:
+Mariano Esteves Chaves. (2021). The MCMC algorithm using C++ (0.2). Zenodo. https://doi.org/10.5281/zenodo.5496330
+
 ## v. 0.2
 * Inclusion of the working parallelized version of the code: "run_parallel()";
 
