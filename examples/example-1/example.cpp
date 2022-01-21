@@ -8,7 +8,7 @@
 #include "numcmc/nu.h"
 
 
-double loglike(std::vector<double> params) {
+double loglike(std::vector<double> &params) {
     double logL = 0;
     double mean[3] = {50, 1, 20};
     double dev[3] = {1, 1, 20};

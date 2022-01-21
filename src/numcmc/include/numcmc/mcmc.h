@@ -28,10 +28,10 @@ class Mcmc {
     std::vector<std::vector<double>> load_state(char *file_name);
 
    public:
-    int run(double (*func)(std::vector<double>), int steps);
-    int run_parallel(double (*func)(std::vector<double>), int steps,
+    int run(double (*func)(std::vector<double> &), int steps);
+    int run_parallel(double (*func)(std::vector<double> &), int steps,
                      int threads);
-    int run_notlog(double (*func)(std::vector<double>), int steps);
+    int run_notlog(double (*func)(std::vector<double> &), int steps);
     int reset();
     int save_state(char *file_name);
 
