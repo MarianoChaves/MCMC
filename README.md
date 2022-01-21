@@ -19,3 +19,27 @@ Mariano Esteves Chaves. (2021). The MCMC algorithm using C++ (0.2). Zenodo. http
 * Save history functions;
 
 For further information contact mchaves@ifi.unicamp.br
+
+## Compiler options
+
+### For Windows
+
+Compiler MinGW-w64 in [Msys2](https://www.msys2.org/) is tested.
+
+```
+cmake ../ -DCMAKE_CXX_STANDARD=11
+ninja -f build.ninja
+```
+
+*Prerequisite in Msys2*
+```
+pacman -S mingw-w64-x86_64-cmake
+pacman -S mingw-w64-x86_64-ninja
+pacman -S --needed base-devel mingw-w64-x86_64-toolchain
+```
+
+### For Linux
+```
+cmake ../ -DCMAKE_CXX_STANDARD=11
+make -j2
+```
