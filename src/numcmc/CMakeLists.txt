@@ -8,7 +8,7 @@ find_package(OpenMP REQUIRED)
 ##############################################
 # Create target and set properties
 
-add_library(numcmc src/ensemble.cpp src/mcmc.cpp src/walker.cpp)
+add_library(numcmc SHARED src/ensemble.cpp src/mcmc.cpp src/walker.cpp)
 
 #Add an alias so that library can be used inside the build tree, e.g. when testing
 add_library(numcmc::numcmc ALIAS numcmc)
